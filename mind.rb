@@ -2,8 +2,28 @@ class Mastermind
   COLORS = ["R", "G", "B", "Y","O", "P"]
 
   def initialize 
-    @secret_code = Array.new(4) {COLORS.sample}
+    @role = choose_role
+    if @role == :guesser
+      @secret_code = array.new(4) {COLORS.sample}
+    else
+      puts "Creator mode selected"
   end
+end
+
+def choose_role
+  puts "Welcome to mastermind."
+  puts "Do you want to be a Guesser o a Creator?"
+  puts "enter 'G' to guess the computer's code"
+  puts "Enter 'C' to create your own code for the computer to guess"
+
+  choice = gets.chomp.upcase
+  until ['G', 'C'].include?(choice)
+    puts "Please enter 'G' or 'C':"
+    choice = gets.chomp.upcase
+  end
+  choice == 'G' ? :guesser : :Creator
+end
+
 
   def play
     12.times do |turn|
@@ -24,8 +44,9 @@ class Mastermind
   private
 
   def feedback(guess)
-    exact = guess.each_index.count { |i| guess[1] == @secret_code[i]}
-    color_only = (guess & @secret_code).map { |c| [guess.count(c), @secret_code.count(c)].min}.sum - exact
+    exact = guess.each_index.count { |i| guess[i] == @secret_code[i]}
+    color_only = (guess & @secret_code).map { |c| [guess.count(c), 
+    @secret_code.count(c)].min}.sum - exact
     puts "Exact matches: #{exact}, Color only: #{color_only}"
   end
 end
