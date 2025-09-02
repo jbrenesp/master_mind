@@ -4,31 +4,43 @@ class Mastermind
   def initialize 
     @role = choose_role
     if @role == :guesser
-      @secret_code = array.new(4) {COLORS.sample}
+      @secret_code = Array.new(4) {COLORS.sample}
     else
       set_human_code
+    end
   end
-end
-
-def choose_role
-  puts "Welcome to mastermind."
-  puts "Do you want to be a Guesser o a Creator?"
-  puts "enter 'G' to guess the computer's code"
-  puts "Enter 'C' to create your own code for the computer to guess"
-
-  choice = gets.chomp.upcase
-  until ['G', 'C'].include?(choice)
-    puts "Please enter 'G' or 'C':"
+  
+  def choose_role
+    puts "Welcome to mastermind."
+    puts "Do you want to be a Guesser o a Creator?"
+    puts "enter 'G' to guess the computer's code"
+    puts "Enter 'C' to create your own code for the compu
+    ter to guess"
     choice = gets.chomp.upcase
+    
+    until ['G', 'C'].include?(choice)
+      puts "Please enter 'G' or 'C':"
+      choice = gets.chomp.upcase
+    end
+    
+    choice == 'G' ? :guesser : :creator
   end
-  choice == 'G' ? :guesser : :Creator
-end
+  
+  def set_human_code
+    puts "Enter your secret code..."
+    @secret_code = gets.chomp.upcase.chars
+  end
 
-def playif @role == :guesser
-  play_as_guesser
-else 
-  play_as_creator
-end
+
+  
+  def play 
+    if @role == :guesser
+      play_as_guesser
+    else 
+      play_as_creator
+    end
+  end
+
 
 
   def play_as_guesser
@@ -59,25 +71,38 @@ end
 
       if computer_guess == @secret_code
         puts "The computer cracked your code!"
+        return
       end
 
       exact, color_only = calculate_feedback(computer_guess)
-      puts "Exact matches: #{exact}, Color only: {color_only}"
+      puts "Exact matches: #{exact}, Color only: #{color_only}"
     end
 
     puts "Computer failed to guess your code! You win!!!"
-    puts "Your secret code was: #{secret_code.join}"
+    puts "Your secret code was: #{@secret_code.join}"
   end
 
   private
-
-  def feedback(guess)
-    exact = guess.each_index.count { |i| guess[i] == @secret_code[i]}
-    color_only = (guess & @secret_code).map { |c| [guess.count(c), 
-    @secret_code.count(c)].min}.sum - exact
-    puts "Exact matches: #{exact}, Color only: #{color_only}"
+  
+  def valid_guess?(guess)
+    guess.length == 4 && guess.all? { |color| COLORS. 
+    include?(color) }
   end
+  
+  def calculate_feedback(guess)
+      exact = guess.each_index.count { |i| guess[i] ==
+      @secret_code[i] }
+      color_only = (guess & @secret_code).map { |c| 
+      [guess.count(c), @secret_code.count(c)].min}.sum - exact
+      [exact, color_only]
+    end
+    
+    def feedback(guess)
+      exact, color_only = calculate_feedback(guess)
+      puts "Exact matches: #{exact}, Color only: #{color_only}"
+    end
 end
+
 
 game = Mastermind.new
 game.play
